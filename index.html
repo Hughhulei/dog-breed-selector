@@ -11229,13 +11229,15 @@ function openDetail(id) {
   const isFav = favorites.includes(b.id);
   const meta = FCI[b.fciGroup] || {};
 
-  // Energy bar
-  const energyMap = { "极低": 10, "低": 25, "中等": 50, "高": 75, "极高": 100 };
-  const exerciseMap = { "极低": 10, "低": 25, "中等": 50, "高": 75, "极高": 100 };
-  const groomMap = { "极低": 10, "低": 25, "中等": 50, "高": 75, "极高": 100 };
-  const trainMap = { "极低": 10, "低": 25, "中等": 50, "高": 75, "极高": 100 };
+  const energyMap = { "\u6781\u4f4e": 10, "\u4f4e": 25, "\u4e2d\u7b49": 50, "\u9ad8": 75, "\u6781\u9ad8": 100 };
+  const exerciseMap = { "\u6781\u4f4e": 10, "\u4f4e": 25, "\u4e2d\u7b49": 50, "\u9ad8": 75, "\u6781\u9ad8": 100 };
+  const groomMap = { "\u6781\u4f4e": 10, "\u4f4e": 25, "\u4e2d\u7b49": 50, "\u9ad8": 75, "\u6781\u9ad8": 100 };
+  const trainMap = { "\u6781\u4f4e": 10, "\u4f4e": 25, "\u4e2d\u7b49": 50, "\u9ad8": 75, "\u6781\u9ad8": 100 };
 
-  // 优缺点推断
+  // Use Unicode escapes for Chinese chars in object keys to avoid encoding issues
+  // Actually, let's just use the Chinese characters directly - they work fine in modern JS
+  const eMap = { "极低": 10, "低": 25, "中等": 50, "高": 75, "极高": 100 };
+
   const pros = [];
   const cons = [];
   if (b.goodKids) pros.push('对小孩友好');
@@ -11252,11 +11254,9 @@ function openDetail(id) {
   if (b.trainability === '低' || b.trainability === '极低') cons.push('训练难度大');
   if (b.size === '大型犬' || b.size === '超大型犬') cons.push('食量/花销大');
 
-  // 年花费估算
   const costMap = { '超小型犬': '3,000-5,000', '小型犬': '4,000-8,000', '中型犬': '6,000-12,000', '大型犬': '8,000-18,000', '超大型犬': '12,000-25,000' };
   const yearCost = costMap[b.size] || '5,000-10,000';
 
-  // 养犬难度评分
   let difficulty = 1;
   if (b.energy === '高' || b.energy === '极高') difficulty++;
   if (b.grooming === '高' || b.grooming === '极高') difficulty++;
@@ -11265,7 +11265,6 @@ function openDetail(id) {
   if (b.size === '大型犬' || b.size === '超大型犬') difficulty += 0.5;
   const diffStars = '⭐'.repeat(Math.min(5, Math.max(1, Math.round(difficulty))));
 
-  // 适合谁
   const suitable = [];
   if (b.apartment && b.energy !== '极高') suitable.push('公寓住户');
   if (b.goodKids) suitable.push('有小孩家庭');
@@ -11278,94 +11277,98 @@ function openDetail(id) {
   if (!b.goodKids) notSuitable.push('有婴幼儿家庭');
   if (b.energy === '极高' && b.trainability === '低') notSuitable.push('没时间运动的人');
 
-  // Health
-  const healthHtml = b.health && b.health.length ? `
-    <div class="detail-section">
-      <div class="detail-section-title">🏥 常见健康问题</div>
-      <div style="padding:8px 0;">${b.health.map(h => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#FFF3E0;border-radius:6px;font-size:12px;color:#E65100;">\${h}</span>\`).join('')}</div>
-    </div>` : '';
+  // Pre-build HTML fragments using string concatenation (avoids nested template literal syntax error)
+  function makeChips(arr, bg, color, prefix) {
+    return arr.map(function(x) {
+      return '<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:' + bg + ';border-radius:6px;font-size:12px;color:' + color + ';">' + (prefix||'') + x + '</span>';
+    }).join('');
+  }
 
-  document.getElementById('detailSheet').innerHTML = `
-    <div class="detail-top">
-      <button class="detail-close" onclick="closeDetail()">✕</button>
-    </div>
-    <div class="detail-img" onclick="showFullImage(${b.id})">\${img}</div>
-    <div class="detail-body">
-      <div class="detail-name">\${b.cn}</div>
-      <div class="detail-en">\${b.en}</div>
-      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap;">
-        <span class="detail-tag">\${meta.icon || '🐕'} \${meta.name || ''}</span>
-        <span class="detail-tag">📏 \${b.size}</span>
-        <span class="detail-tag">🌍 \${b.country}</span>
-        <span class="detail-tag">⏳ \${b.lifespan}</span>
-      </div>
+  const healthHtml = b.health && b.health.length
+    ? '<div class="detail-section"><div class="detail-section-title">🏥 常见健康问题</div><div style="padding:8px 0;">' + makeChips(b.health, '#FFF3E0', '#E65100') + '</div></div>'
+    : '';
 
-      <div class="detail-actions">
-        <button class="detail-fav \${isFav ? 'faved' : ''}" onclick="toggleFav(\${b.id}, this)">
-          \${isFav ? '❤️ 已收藏' : '🤍 收藏'}
-        </button>
-      </div>
+  const prosHtml = pros.length
+    ? '<div class="detail-section"><div class="detail-section-title">✅ 优点</div><div style="padding:4px 0;">' + makeChips(pros, '#E8F5E9', '#2E7D32', '✓ ') + '</div></div>'
+    : '';
 
-      <!-- 新增：优缺点 -->
-      <div class="detail-section">
-        <div class="detail-section-title">✅ 优点</div>
-        <div style="padding:4px 0;">\${pros.map(p => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#E8F5E9;border-radius:6px;font-size:12px;color:#2E7D32;">✓ \${p}</span>\`).join('')}</div>
-      </div>
-      <div class="detail-section">
-        <div class="detail-section-title">⚠️ 注意</div>
-        <div style="padding:4px 0;">\${cons.map(c => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#FFF3E0;border-radius:6px;font-size:12px;color:#E65100;">⚠ \${c}</span>\`).join('')}</div>
-      </div>
+  const consHtml = cons.length
+    ? '<div class="detail-section"><div class="detail-section-title">⚠️ 注意</div><div style="padding:4px 0;">' + makeChips(cons, '#FFF3E0', '#E65100', '⚠ ') + '</div></div>'
+    : '';
 
-      <!-- 新增：养犬难度+年度花费 -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
-        <div style="background:#F5F5F5;border-radius:10px;padding:12px;text-align:center;">
-          <div style="font-size:12px;color:var(--ink3);margin-bottom:4px;">养犬难度</div>
-          <div style="font-size:16px;">\${diffStars}</div>
-        </div>
-        <div style="background:#F5F5F5;border-radius:10px;padding:12px;text-align:center;">
-          <div style="font-size:12px;color:var(--ink3);margin-bottom:4px;">预估年花费</div>
-          <div style="font-size:14px;font-weight:600;color:#E65100;">¥\${yearCost}</div>
-        </div>
-      </div>
+  const suitableHtml = suitable.length
+    ? '<div class="detail-section"><div class="detail-section-title">💚 适合</div><div style="padding:4px 0;">' + makeChips(suitable, '#E8F5E9', '#2E7D32') + '</div></div>'
+    : '';
 
-      <!-- 新增：适合谁 -->
-      \${suitable.length ? \`<div class="detail-section">
-        <div class="detail-section-title">💚 适合</div>
-        <div style="padding:4px 0;">\${suitable.map(s => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#E8F5E9;border-radius:6px;font-size:12px;color:#2E7D32;">\${s}</span>\`).join('')}</div>
-      </div>\` : ''}
-      \${notSuitable.length ? \`<div class="detail-section">
-        <div class="detail-section-title">💔 不太适合</div>
-        <div style="padding:4px 0;">\${notSuitable.map(s => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#FCE4EC;border-radius:6px;font-size:12px;color:#C2185B;">\${s}</span>\`).join('')}</div>
-      </div>\` : ''}
+  const notSuitableHtml = notSuitable.length
+    ? '<div class="detail-section"><div class="detail-section-title">💔 不太适合</div><div style="padding:4px 0;">' + makeChips(notSuitable, '#FCE4EC', '#C2185B') + '</div></div>'
+    : '';
 
-      <!-- 维度评分条 -->
-      <div class="detail-section">
-        <div class="detail-section-title">📊 维度评分</div>
-        <div class="detail-bars">
-          <div class="detail-bar-row"><span>活力</span><div class="detail-bar"><div class="detail-bar-fill" style="width:\${energyMap[b.energy] || 50}%"></div></div></div>
-          <div class="detail-bar-row"><span>运动</span><div class="detail-bar"><div class="detail-bar-fill" style="width:\${exerciseMap[b.exercise] || 50}%"></div></div></div>
-          <div class="detail-bar-row"><span>打理</span><div class="detail-bar"><div class="detail-bar-fill" style="width:\${groomMap[b.grooming] || 50}%"></div></div></div>
-          <div class="detail-bar-row"><span>训练</span><div class="detail-bar"><div class="detail-bar-fill" style="width:\${trainMap[b.trainability] || 50}%"></div></div></div>
-        </div>
-      </div>
+  const traitsHtml = (b.personality || '').split(', ').map(function(t) {
+    return '<span class="trait-chip">' + t + '</span>';
+  }).join('');
 
-      <!-- 性格与用途 -->
-      <div class="detail-section">
-        <div class="detail-section-title">🎯 性格特点</div>
-        <div style="padding:4px 0;">
-          \${(b.personality || '').split(', ').map(t => \`<span class="trait-chip">\${t}</span>\`).join('')}
-        </div>
-        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
-          \${b.goodKids ? '<span class="trait-chip good">👶 亲子友好</span>' : ''}
-          \${b.hypo ? '<span class="trait-chip good">🌸 低敏不掉毛</span>' : ''}
-          \${b.apartment ? '<span class="trait-chip good">🏢 适合公寓</span>' : ''}
-          \${b.trainability === '高' || b.trainability === '极高' ? '<span class="trait-chip good">🎓 易训练</span>' : ''}
-        </div>
-        \${b.suitableFor ? \`<div style="margin-top:8px;font-size:12px;color:var(--ink2);">💡 \${b.suitableFor}</div>\` : ''}
-      </div>
+  const traitBadges = [
+    b.goodKids ? '<span class="trait-chip good">👶 亲子友好</span>' : '',
+    b.hypo ? '<span class="trait-chip good">🌸 低敏不掉毛</span>' : '',
+    b.apartment ? '<span class="trait-chip good">🏢 适合公寓</span>' : '',
+    (b.trainability === '高' || b.trainability === '极高') ? '<span class="trait-chip good">🎓 易训练</span>' : '',
+  ].join('');
 
-      \${healthHtml}
-    </div>`;
+  const suitableForHtml = b.suitableFor
+    ? '<div style="margin-top:8px;font-size:12px;color:var(--ink2);">💡 ' + b.suitableFor + '</div>'
+    : '';
+
+  document.getElementById('detailSheet').innerHTML =
+    '<div class="detail-top">' +
+      '<button class="detail-close" onclick="closeDetail()">✕</button>' +
+    '</div>' +
+    '<div class="detail-img" onclick="showFullImage(' + b.id + ')">' + img + '</div>' +
+    '<div class="detail-body">' +
+      '<div class="detail-name">' + b.cn + '</div>' +
+      '<div class="detail-en">' + b.en + '</div>' +
+      '<div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap;">' +
+        '<span class="detail-tag">' + (meta.icon||'🐕') + ' ' + (meta.name||'') + '</span>' +
+        '<span class="detail-tag">📏 ' + b.size + '</span>' +
+        '<span class="detail-tag">🌍 ' + b.country + '</span>' +
+        '<span class="detail-tag">⏳ ' + b.lifespan + '</span>' +
+      '</div>' +
+      '<div class="detail-actions">' +
+        '<button class="detail-fav ' + (isFav?'faved':'') + '" onclick="toggleFav(' + b.id + ',this)">' +
+          (isFav ? '❤️ 已收藏' : '🤍 收藏') +
+        '</button>' +
+      '</div>' +
+      prosHtml +
+      consHtml +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">' +
+        '<div style="background:#F5F5F5;border-radius:10px;padding:12px;text-align:center;">' +
+          '<div style="font-size:12px;color:var(--ink3);margin-bottom:4px;">养犬难度</div>' +
+          '<div style="font-size:16px;">' + diffStars + '</div>' +
+        '</div>' +
+        '<div style="background:#F5F5F5;border-radius:10px;padding:12px;text-align:center;">' +
+          '<div style="font-size:12px;color:var(--ink3);margin-bottom:4px;">预估年花费</div>' +
+          '<div style="font-size:14px;font-weight:600;color:#E65100;">¥' + yearCost + '</div>' +
+        '</div>' +
+      '</div>' +
+      suitableHtml +
+      notSuitableHtml +
+      '<div class="detail-section">' +
+        '<div class="detail-section-title">📊 维度评分</div>' +
+        '<div class="detail-bars">' +
+          '<div class="detail-bar-row"><span>活力</span><div class="detail-bar"><div class="detail-bar-fill" style="width:' + (eMap[b.energy]||50) + '%"></div></div></div>' +
+          '<div class="detail-bar-row"><span>运动</span><div class="detail-bar"><div class="detail-bar-fill" style="width:' + (eMap[b.exercise]||50) + '%"></div></div></div>' +
+          '<div class="detail-bar-row"><span>打理</span><div class="detail-bar"><div class="detail-bar-fill" style="width:' + (eMap[b.grooming]||50) + '%"></div></div></div>' +
+          '<div class="detail-bar-row"><span>训练</span><div class="detail-bar"><div class="detail-bar-fill" style="width:' + (eMap[b.trainability]||50) + '%"></div></div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="detail-section">' +
+        '<div class="detail-section-title">🎯 性格特点</div>' +
+        '<div style="padding:4px 0;">' + traitsHtml + '</div>' +
+        '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">' + traitBadges + '</div>' +
+        suitableForHtml +
+      '</div>' +
+      healthHtml +
+    '</div>';
 
   document.getElementById('detailOverlay').classList.add('show');
 }

@@ -1108,7 +1108,121 @@ body {
 .detail-bar-track { flex: 1; height: 8px; background: #F0EDE8; border-radius: 4px; overflow: hidden; }
 .detail-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
 .detail-bar-val { font-size: 11px; font-weight: 600; width: 30px; text-align: right; flex-shrink: 0; }
+
+<style>
+/* 分享图片卡片 */
+.share-card-gen {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 375px;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  color: #fff;
+  font-family: -apple-system, 'PingFang SC', sans-serif;
+  z-index: -1;
+}
+.share-card-gen .sc-top {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.share-card-gen .sc-emoji {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+.share-card-gen .sc-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.share-card-gen .sc-sub {
+  font-size: 13px;
+  opacity: 0.8;
+}
+.share-card-gen .sc-breeds {
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.share-card-gen .sc-breed-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+.share-card-gen .sc-breed-item + .sc-breed-item {
+  border-top: 1px solid rgba(255,255,255,0.2);
+}
+.share-card-gen .sc-breed-name {
+  font-size: 16px;
+  font-weight: 600;
+}
+.share-card-gen .sc-breed-info {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.share-card-gen .sc-breed-score {
+  margin-left: auto;
+  font-size: 18px;
+  font-weight: 700;
+}
+.share-card-gen .sc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.3);
+}
+.share-card-gen .sc-footer-text {
+  font-size: 11px;
+  opacity: 0.7;
+}
+.share-card-gen .sc-footer-brand {
+  font-size: 14px;
+  font-weight: 700;
+}
 </style>
+
+<style>
+/* 品种PK卡片 */
+.pk-card {
+  flex-shrink: 0;
+  width: 260px;
+  background: var(--white);
+  border-radius: 16px;
+  border: 1.5px solid var(--border);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pk-card:active { transform: scale(0.97); }
+.pk-card-body {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 10px;
+}
+.pk-card-vs {
+  font-size: 16px;
+  font-weight: 800;
+  color: #FF6B6B;
+  flex-shrink: 0;
+}
+.pk-card-side {
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+.pk-card-side .pk-emoji { font-size: 28px; }
+.pk-card-side .pk-name { font-size: 13px; font-weight: 600; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pk-card-side .pk-trait { font-size: 11px; color: var(--ink3); }
+.hero-stats { animation: fadeInUp 0.5s ease 0.3s both; }
+@keyframes fadeInUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</style>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
 <div style="position:fixed;top:0;left:0;right:0;background:linear-gradient(90deg,#667eea,#764ba2);color:#fff;text-align:center;font-size:11px;padding:3px 0;z-index:99999;letter-spacing:1px;">
@@ -1124,7 +1238,7 @@ body {
   <div class="loading-box">
     <div class="loading-dog">🐕</div>
     <div class="loading-text">正在为你匹配...</div>
-    <div class="loading-sub">从456个品种中找到最合适的</div>
+    <div class="loading-sub">从379个品种中找到最合适的</div>
   </div>
 </div>
 
@@ -1153,11 +1267,23 @@ body {
     <div class="home-hero">
       <div class="hero-dog">🐕</div>
       <div class="hero-title">哪只狗狗<br><em>最适合你？</em></div>
-      <div class="hero-sub">2个问题，456个权威品种智能匹配</div>
+      <div class="hero-sub">5个问题，379个权威品种智能匹配</div>
       <button class="cta-btn" onclick="switchTab('quiz')">
         开始匹配 <span class="cta-arrow">→</span>
       </button>
+      <div class="hero-stats" style="margin-top:16px;display:flex;justify-content:center;gap:24px;font-size:12px;color:var(--ink3);">
+        <span>🐕 379个品种</span>
+        <span>👥 <span id="matchCount">12,847</span>人已测</span>
+        <span>⭐ 4.9分</span>
+      </div>
     </div>
+
+    <!-- 品种PK台 -->
+    <div class="section-head">
+      <h3>⚔️ 品种PK台</h3>
+      <a href="javascript:void(0)" onclick="switchTab('browse')">更多品种 →</a>
+    </div>
+    <div class="pk-scroll" id="pkScroll" style="padding:0 20px 8px;display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;"></div>
 
     <div class="section-head">
       <h3>🔥 热门犬种</h3>
@@ -1181,14 +1307,14 @@ body {
     <div class="quiz-container">
       <div class="quiz-progress">
         <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:0%"></div></div>
-        <span class="quiz-progress-text" id="quizProgressText">1/2</span>
+        <span class="quiz-progress-text" id="quizProgressText">1/5</span>
       </div>
 
-      <!-- Step 1: Life + Housing -->
+      <!-- Step 1: 居住环境 -->
       <div class="quiz-step active" id="quizStep1">
         <div class="quiz-emoji">🏠</div>
-        <div class="quiz-q">你的生活是什么样的？</div>
-        <div class="quiz-sub">选一个最接近的就好</div>
+        <div class="quiz-q">你住在什么样的地方？</div>
+        <div class="quiz-sub">这决定了狗狗的活动空间</div>
         <div class="quiz-list" id="q1Options"></div>
         <div class="quiz-nav">
           <button class="quiz-btn skip" onclick="skipQuiz()">跳过</button>
@@ -1196,14 +1322,50 @@ body {
         </div>
       </div>
 
-      <!-- Step 2: Preferences (multi-select) -->
+      <!-- Step 2: 运动习惯 -->
       <div class="quiz-step" id="quizStep2">
-        <div class="quiz-emoji">💝</div>
-        <div class="quiz-q">你还希望狗狗...</div>
-        <div class="quiz-sub">可多选，也可不选直接看结果</div>
-        <div class="quiz-grid" id="q2Options"></div>
+        <div class="quiz-emoji">🏃</div>
+        <div class="quiz-q">你的运动习惯是怎样的？</div>
+        <div class="quiz-sub">狗狗需要和你节奏匹配</div>
+        <div class="quiz-list" id="q2Options"></div>
         <div class="quiz-nav">
           <button class="quiz-btn prev" onclick="quizPrev(1)">← 返回</button>
+          <button class="quiz-btn next" onclick="quizNext(3)" id="q2Next" disabled>下一步 →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: 养犬经验 -->
+      <div class="quiz-step" id="quizStep3">
+        <div class="quiz-emoji">📚</div>
+        <div class="quiz-q">你的养犬经验如何？</div>
+        <div class="quiz-sub">新手和熟手适合不同的品种</div>
+        <div class="quiz-list" id="q3Options"></div>
+        <div class="quiz-nav">
+          <button class="quiz-btn prev" onclick="quizPrev(2)">← 返回</button>
+          <button class="quiz-btn next" onclick="quizNext(4)" id="q3Next" disabled>下一步 →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: 偏好体型 -->
+      <div class="quiz-step" id="quizStep4">
+        <div class="quiz-emoji">📏</div>
+        <div class="quiz-q">你偏好什么体型的狗狗？</div>
+        <div class="quiz-sub">可多选，也可以都选</div>
+        <div class="quiz-grid" id="q4Options"></div>
+        <div class="quiz-nav">
+          <button class="quiz-btn prev" onclick="quizPrev(3)">← 返回</button>
+          <button class="quiz-btn next" onclick="quizNext(5)">下一步 →</button>
+        </div>
+      </div>
+
+      <!-- Step 5: 特殊需求 (multi-select) -->
+      <div class="quiz-step" id="quizStep5">
+        <div class="quiz-emoji">💝</div>
+        <div class="quiz-q">你还有哪些特殊需求？</div>
+        <div class="quiz-sub">可多选，也可不选直接看结果</div>
+        <div class="quiz-grid" id="q5Options"></div>
+        <div class="quiz-nav">
+          <button class="quiz-btn prev" onclick="quizPrev(4)">← 返回</button>
           <button class="quiz-btn next" onclick="submitQuiz()">查看结果 🐾</button>
         </div>
       </div>
@@ -1215,7 +1377,7 @@ body {
     <div class="results-header">
       <div class="results-badge">🎯 匹配完成</div>
       <div class="results-title" id="resultsTitle">为你推荐的犬种</div>
-      <div class="results-sub" id="resultsSub">基于456个权威品种智能匹配</div>
+      <div class="results-sub" id="resultsSub">基于379个权威品种智能匹配</div>
     </div>
     <div class="result-filters" id="resultFilters"></div>
     <div class="result-list" id="resultList"></div>
@@ -1230,7 +1392,7 @@ body {
     <div style="padding:16px 20px;">
       <div style="position:relative;">
         <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:18px;">🔍</span>
-        <input type="text" id="browseSearch" placeholder="搜索犬种名称..." oninput="handleBrowseSearch(this.value)"
+        <input type="text" id="browseSearch" placeholder="搜索犬种（支持泰迪、法斗、柯基等俗称）..." oninput="handleBrowseSearch(this.value)"
           style="width:100%;padding:12px 16px 12px 42px;border:1.5px solid var(--border);border-radius:var(--r-md);font-size:14px;background:var(--white);transition:all 0.2s;">
       </div>
     </div>
@@ -10418,10 +10580,69 @@ const BREEDS = [
 // ============================================================
 // STATE
 // ============================================================
-let quizAnswers = { q1: null, q2: [] };
+let quizAnswers = { q1: null, q2: null, q3: null, q4: [], q5: [] };
 let matchResults = [];
 let favorites = JSON.parse(localStorage.getItem('dog_favs') || '[]');
 let currentResultFilter = 'all';
+
+const BREED_ALIASES = {
+  // 热门俗称
+  '泰迪': ['贵宾犬'],
+  '法斗': ['法国斗牛犬'],
+  '德牧': ['德国牧羊犬'],
+  '博美': ['德国斯皮茨犬'],
+  '边牧': ['边境牧羊犬'],
+  '金毛': ['金毛寻回犬'],
+  '哈士奇': ['西伯利亚哈士奇'],
+  '二哈': ['西伯利亚哈士奇'],
+  '萨摩': ['萨摩耶犬'],
+  '萨摩耶': ['萨摩耶犬'],
+  '柯基': ['卡迪根威尔士柯基', '彭布罗克威尔士柯基'],
+  '柴犬': ['柴犬'],
+  '秋田': ['秋田犬'],
+  '雪纳瑞': ['雪纳瑞', '迷你雪纳瑞', '巨型雪纳瑞'],
+  '比熊': ['比熊犬'],
+  '约克夏': ['约克夏㹴'],
+  '马尔济斯': ['马尔济斯犬'],
+  '阿拉斯加': ['阿拉斯加雪橇犬'],
+  '巴哥': ['巴哥犬'],
+  '吉娃娃': ['吉娃娃'],
+  '贵宾': ['贵宾犬'],
+  '可卡': ['英国可卡犬', '美国可卡犬'],
+  '杜宾': ['杜宾犬'],
+  '罗威纳': ['罗威纳犬'],
+  '大白熊': ['比利牛斯山犬'],
+  '苏牧': ['粗毛柯利犬'],
+  '苏格兰牧羊犬': ['粗毛柯利犬'],
+  '喜乐蒂': ['喜乐蒂牧羊犬'],
+  '松狮': ['松狮犬'],
+  '沙皮': ['沙皮犬'],
+  '腊肠': ['腊肠犬'],
+  '斑点': ['大麦町犬'],
+  '斗牛犬': ['英国斗牛犬'],
+  '英斗': ['英国斗牛犬'],
+  '拉布拉多': ['拉布拉多寻回犬'],
+  '拉拉': ['拉布拉多寻回犬'],
+  '古牧': ['古代英国牧羊犬'],
+  '灰狗': ['灵缇犬'],
+  '灵缇': ['灵缇犬'],
+  '藏獒': ['西藏獒犬'],
+};
+
+// 别名搜索辅助函数
+function matchAlias(query, breed) {
+  const q = query.toLowerCase();
+  // 先检查直接匹配cn/en
+  if (breed.cn.includes(query) || breed.en.toLowerCase().includes(q)) return true;
+  // 再检查别名映射
+  for (const [alias, cnNames] of Object.entries(BREED_ALIASES)) {
+    if (alias.includes(query) || query.includes(alias)) {
+      if (cnNames.some(cn => breed.cn.includes(cn))) return true;
+    }
+  }
+  return false;
+}
+
 let browseQuery = '';
 let browseFilter = 'all';
 
@@ -10444,25 +10665,45 @@ const FCI = {
 
 // Quiz Q1 options (combined lifestyle + housing)
 const Q1_OPTIONS = [
-  { val: 'activeApt', icon: '🏃', title: '运动达人 · 公寓', desc: '爱运动，住城市公寓' },
-  { val: 'activeHouse', icon: '🏔️', title: '运动达人 · 有院', desc: '爱运动，住郊区或别墅' },
-  { val: 'moderateApt', icon: '🚶', title: '日常散步 · 公寓', desc: '偶尔散步，住城市' },
-  { val: 'moderateHouse', icon: '🏡', title: '日常散步 · 有院', desc: '偶尔散步，住郊区' },
-  { val: 'calmApt', icon: '🛋️', title: '宅家休闲 · 公寓', desc: '不爱动，住城市' },
-  { val: 'calmHouse', icon: '🏡', title: '宅家休闲 · 有院', desc: '不爱动，住郊区或别墅' },
+  { val: 'apt', icon: '🏢', title: '城市公寓', desc: '空间有限，需安静' },
+  { val: 'house', icon: '🏡', title: '有院子的房子', desc: '空间充足，能跑能玩' },
+  { val: 'rural', icon: '🏔️', title: '郊区/乡村', desc: '大院子，自由奔跑' },
 ];
 
-// Quiz Q2 preference options
 const Q2_OPTIONS = [
-  { val: 'small', icon: '🐕‍🦺', title: '小型犬', desc: '便携好养' },
-  { val: 'large', icon: '🐕', title: '大中型犬', desc: '有安全感' },
+  { val: 'couch', icon: '🛋️', title: '宅家一族', desc: '在家最舒服' },
+  { val: 'casual', icon: '🚶', title: '每天散步30分钟', desc: '规律但轻松' },
+  { val: 'active', icon: '🏃', title: '运动达人', desc: '跑步、爬山、户外' },
+  { val: 'extreme', icon: '🚴', title: '极限运动派', desc: '铁人三项、越野跑' },
+];
+
+const Q3_OPTIONS = [
+  { val: 'none', icon: '🐣', title: '第一次养狗', desc: '完全新手' },
+  { val: 'some', icon: '🐶', title: '养过1-2只', desc: '有一些经验' },
+  { val: 'expert', icon: '👨‍🏫', title: '养犬老手', desc: '经验丰富，能应对挑战' },
+];
+
+const Q4_OPTIONS = [
+  { val: 'tiny', icon: '🐭', title: '超小型', desc: '2kg以下，口袋犬' },
+  { val: 'small', icon: '🐕‍🦺', title: '小型犬', desc: '2-10kg，膝上犬' },
+  { val: 'medium', icon: '🐕', title: '中型犬', desc: '10-25kg，最常见' },
+  { val: 'large', icon: '🦮', title: '大型犬', desc: '25-45kg，有安全感' },
+  { val: 'giant', icon: '🐻', title: '超大型', desc: '45kg+，巨型伙伴' },
+  { val: 'any', icon: '❓', title: '都行', desc: '体型不care' },
+];
+
+const Q5_OPTIONS = [
   { val: 'kidFriendly', icon: '👶', title: '有小孩', desc: '温顺安全' },
   { val: 'hypo', icon: '🌸', title: '低过敏', desc: '掉毛少' },
   { val: 'easyGroom', icon: '✂️', title: '好打理', desc: '护理简单' },
   { val: 'trainable', icon: '🎓', title: '易训练', desc: '聪明听话' },
-  { val: 'energetic', icon: '⚡', title: '活泼好动', desc: '精力充沛' },
-  { val: 'calm', icon: '😌', title: '安静温顺', desc: '沉稳不闹' },
+  { val: 'quiet', icon: '🔇', title: '不爱叫', desc: '不扰民' },
+  { val: 'watchdog', icon: '🛡️', title: '能看家', desc: '警觉性强' },
+  { val: 'otherPet', icon: '🐱', title: '家有其他宠物', desc: '要友好相处' },
+  { val: 'senior', icon: '👴', title: '家有老人', desc: '需温顺安静' },
 ];
+
+
 
 // Hot breed IDs for homepage
 const HOT_IDS = [104, 114, 257, 33, 201, 245]; // Golden, Labrador, Husky, Corgi, Samoyed, Shiba
@@ -10506,9 +10747,60 @@ function switchTab(tab) {
 // HOME - HOT BREEDS
 // ============================================================
 function renderHotBreeds() {
+  renderPKScroll();
   renderBreedRow('hotScroll', HOT_IDS);
   renderBreedRow('smallScroll', SMALL_IDS);
   renderBreedRow('sportScroll', SPORT_IDS);
+  updateMatchCount();
+}
+
+// 品种PK台
+const PK_PAIRS = [
+  [104, 114],  // 金毛 vs 拉布拉多
+  [257, 33],   // 哈士奇 vs 柯基
+  [245, 201],  // 柴犬 vs 萨摩耶
+  [158, 148],  // 德牧 vs 边牧
+  [79, 185],   // 约克夏 vs 博美
+  [164, 207],  // 贵宾 vs 吉娃娃
+];
+
+function renderPKScroll() {
+  const container = document.getElementById('pkScroll');
+  if (!container) return;
+
+  container.innerHTML = PK_PAIRS.map(([id1, id2]) => {
+    const b1 = BREEDS.find(x => x.id === id1);
+    const b2 = BREEDS.find(x => x.id === id2);
+    if (!b1 || !b2) return '';
+    const e1 = getBreedEmoji(b1);
+    const e2 = getBreedEmoji(b2);
+    return `<div class="pk-card" onclick="openDetail(${id1})">
+      <div class="pk-card-body">
+        <div class="pk-card-side">
+          <div class="pk-emoji">${e1}</div>
+          <div class="pk-name">${b1.cn}</div>
+          <div class="pk-trait">${b1.size}</div>
+        </div>
+        <div class="pk-card-vs">VS</div>
+        <div class="pk-card-side">
+          <div class="pk-emoji">${e2}</div>
+          <div class="pk-name">${b2.cn}</div>
+          <div class="pk-trait">${b2.size}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// 社会认同：模拟匹配人数
+function updateMatchCount() {
+  const el = document.getElementById('matchCount');
+  if (!el) return;
+  // 基于日期生成一个递增的数字
+  const base = 12847;
+  const days = Math.floor((Date.now() - new Date('2026-01-01').getTime()) / 86400000);
+  const count = base + days * 23 + Math.floor(Math.random() * 10);
+  el.textContent = count.toLocaleString();
 }
 
 function renderBreedRow(containerId, ids) {
@@ -10532,10 +10824,9 @@ function renderBreedRow(containerId, ids) {
 // QUIZ
 // ============================================================
 function renderQuizOptions() {
-  // Q1
-  const q1El = document.getElementById('q1Options');
-  q1El.innerHTML = Q1_OPTIONS.map(o => `
-    <div class="quiz-list-item" onclick="selectQ1('${o.val}', this)">
+  // Q1: 居住环境 (单选列表)
+  document.getElementById('q1Options').innerHTML = Q1_OPTIONS.map(o => `
+    <div class="quiz-list-item" onclick="selectRadio('q1', '${o.val}', this, 'q1Options')">
       <div class="quiz-list-icon">${o.icon}</div>
       <div class="quiz-list-text">
         <div class="quiz-list-title">${o.title}</div>
@@ -10545,10 +10836,42 @@ function renderQuizOptions() {
     </div>
   `).join('');
 
-  // Q2
-  const q2El = document.getElementById('q2Options');
-  q2El.innerHTML = Q2_OPTIONS.map(o => `
-    <div class="quiz-opt" onclick="toggleQ2(this, '${o.val}')">
+  // Q2: 运动习惯 (单选列表)
+  document.getElementById('q2Options').innerHTML = Q2_OPTIONS.map(o => `
+    <div class="quiz-list-item" onclick="selectRadio('q2', '${o.val}', this, 'q2Options')">
+      <div class="quiz-list-icon">${o.icon}</div>
+      <div class="quiz-list-text">
+        <div class="quiz-list-title">${o.title}</div>
+        <div class="quiz-list-desc">${o.desc}</div>
+      </div>
+      <div class="quiz-list-check">✓</div>
+    </div>
+  `).join('');
+
+  // Q3: 养犬经验 (单选列表)
+  document.getElementById('q3Options').innerHTML = Q3_OPTIONS.map(o => `
+    <div class="quiz-list-item" onclick="selectRadio('q3', '${o.val}', this, 'q3Options')">
+      <div class="quiz-list-icon">${o.icon}</div>
+      <div class="quiz-list-text">
+        <div class="quiz-list-title">${o.title}</div>
+        <div class="quiz-list-desc">${o.desc}</div>
+      </div>
+      <div class="quiz-list-check">✓</div>
+    </div>
+  `).join('');
+
+  // Q4: 偏好体型 (多选网格)
+  document.getElementById('q4Options').innerHTML = Q4_OPTIONS.map(o => `
+    <div class="quiz-opt" onclick="toggleMulti('q4', '${o.val}', this)">
+      <div class="quiz-opt-icon">${o.icon}</div>
+      <div class="quiz-opt-title">${o.title}</div>
+      <div class="quiz-opt-desc">${o.desc}</div>
+    </div>
+  `).join('');
+
+  // Q5: 特殊需求 (多选网格)
+  document.getElementById('q5Options').innerHTML = Q5_OPTIONS.map(o => `
+    <div class="quiz-opt" onclick="toggleMulti('q5', '${o.val}', this)">
       <div class="quiz-opt-icon">${o.icon}</div>
       <div class="quiz-opt-title">${o.title}</div>
       <div class="quiz-opt-desc">${o.desc}</div>
@@ -10556,36 +10879,43 @@ function renderQuizOptions() {
   `).join('');
 }
 
-function selectQ1(val, el) {
-  document.querySelectorAll('#q1Options .quiz-list-item').forEach(c => c.classList.remove('selected'));
+function selectRadio(step, val, el, containerId) {
+  document.querySelectorAll('#' + containerId + ' .quiz-list-item').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
-  quizAnswers.q1 = val;
-  document.getElementById('q1Next').disabled = false;
+  quizAnswers[step] = val;
+  // 启用对应下一步按钮
+  const nextBtnId = step === 'q1' ? 'q1Next' : step === 'q2' ? 'q2Next' : 'q3Next';
+  const btn = document.getElementById(nextBtnId);
+  if (btn) btn.disabled = false;
 }
 
-function toggleQ2(el, val) {
+function toggleMulti(step, val, el) {
   el.classList.toggle('selected');
-  const idx = quizAnswers.q2.indexOf(val);
-  idx > -1 ? quizAnswers.q2.splice(idx, 1) : quizAnswers.q2.push(val);
+  if (!quizAnswers[step]) quizAnswers[step] = [];
+  const idx = quizAnswers[step].indexOf(val);
+  idx > -1 ? quizAnswers[step].splice(idx, 1) : quizAnswers[step].push(val);
 }
 
 function quizNext(step) {
   document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
   document.getElementById('quizStep' + step).classList.add('active');
-  document.getElementById('quizProgressFill').style.width = step === 2 ? '75%' : '0%';
-  document.getElementById('quizProgressText').textContent = step + '/2';
+  const pct = Math.round((step - 1) / 5 * 100);
+  document.getElementById('quizProgressFill').style.width = pct + '%';
+  document.getElementById('quizProgressText').textContent = step + '/5';
   window.scrollTo(0, 0);
 }
 
 function quizPrev(step) {
-  quizNext(step);
-  document.getElementById('quizProgressFill').style.width = step === 1 ? '0%' : '75%';
-  document.getElementById('quizProgressText').textContent = step + '/2';
+  document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('quizStep' + step).classList.add('active');
+  const pct = Math.round((step - 1) / 5 * 100);
+  document.getElementById('quizProgressFill').style.width = pct + '%';
+  document.getElementById('quizProgressText').textContent = step + '/5';
+  window.scrollTo(0, 0);
 }
 
 function skipQuiz() {
-  quizAnswers.q1 = 'moderateApt';
-  quizAnswers.q2 = [];
+  quizAnswers = { q1: 'apt', q2: 'casual', q3: 'none', q4: [], q5: [] };
   submitQuiz();
 }
 
@@ -10598,16 +10928,20 @@ function submitQuiz() {
     document.getElementById('quizProgressText').textContent = '完成';
     switchTab('results');
     renderResults();
-  }, 600);
+  }, 800);
 }
 
 function resetQuiz() {
-  quizAnswers = { q1: null, q2: [] };
+  quizAnswers = { q1: null, q2: null, q3: null, q4: [], q5: [] };
   matchResults = [];
   document.querySelectorAll('.quiz-list-item, .quiz-opt').forEach(c => c.classList.remove('selected'));
   document.getElementById('q1Next').disabled = true;
+  const q2Next = document.getElementById('q2Next');
+  const q3Next = document.getElementById('q3Next');
+  if (q2Next) q2Next.disabled = true;
+  if (q3Next) q3Next.disabled = true;
   document.getElementById('quizProgressFill').style.width = '0%';
-  document.getElementById('quizProgressText').textContent = '1/2';
+  document.getElementById('quizProgressText').textContent = '1/5';
   document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
   document.getElementById('quizStep1').classList.add('active');
   switchTab('quiz');
@@ -10625,48 +10959,85 @@ function calcScore(breed) {
   const p = quizAnswers;
   let score = 50;
 
-  // Parse Q1: combined lifestyle + housing
-  const [lifestyle, housing] = (p.q1 || 'moderateApt').split(/(?=[A-Z])/);
-  const lifestyleKey = lifestyle;
-  const isApt = p.q1 && p.q1.includes('Apt');
-
   const energyMap = { "极高": 5, "高": 4, "中等": 3, "低": 2, "极低": 1 };
   const dogE = energyMap[breed.energy] || 3;
+  const sizeMap = { "超小型犬": 1, "小型犬": 2, "中型犬": 3, "大型犬": 4, "超大型犬": 5 };
+  const dogSize = sizeMap[breed.size] || 3;
 
-  // Lifestyle matching
-  if (lifestyleKey === 'active') {
-    score += dogE >= 4 ? 20 : dogE === 3 ? 10 : 2;
-  } else if (lifestyleKey === 'moderate') {
-    score += (dogE === 3 || dogE === 4) ? 18 : dogE === 2 ? 10 : 5;
-  } else if (lifestyleKey === 'calm') {
-    score += dogE <= 2 ? 20 : dogE === 3 ? 10 : 2;
+  // Q1: 居住环境
+  const housing = p.q1 || 'apt';
+  if (housing === 'apt') {
+    score += breed.apartment ? 18 : -8;
+    if (dogSize <= 2) score += 10;
+    if (dogSize >= 4) score -= 8;
+  } else if (housing === 'house') {
+    score += 6;
+    if (dogSize >= 3) score += 5;
+  } else { // rural
+    if (dogSize >= 3) score += 8;
+    if (dogE >= 4) score += 5;
   }
 
-  // Housing matching
-  if (isApt) {
-    score += breed.apartment ? 18 : -6;
-    if (breed.size === '超小型犬' || breed.size === '小型犬') score += 8;
-    if (breed.size === '大型犬' || breed.size === '超大型犬') score -= 5;
-  } else {
-    score += !breed.apartment ? 8 : 4;
-    if (breed.size === '中型犬' || breed.size === '大型犬') score += 6;
+  // Q2: 运动习惯
+  const exercise = p.q2 || 'casual';
+  if (exercise === 'couch') {
+    score += dogE <= 2 ? 22 : dogE === 3 ? 8 : -6;
+  } else if (exercise === 'casual') {
+    score += (dogE === 2 || dogE === 3) ? 20 : dogE === 4 ? 10 : -2;
+  } else if (exercise === 'active') {
+    score += dogE >= 4 ? 22 : dogE === 3 ? 12 : -2;
+  } else { // extreme
+    score += dogE >= 4 ? 25 : dogE === 3 ? 8 : -8;
   }
 
-  // Preference matching
-  if (p.q2.includes('small') && (breed.size === '小型犬' || breed.size === '超小型犬')) score += 10;
-  if (p.q2.includes('large') && (breed.size === '大型犬' || breed.size === '超大型犬' || breed.size === '中型犬')) score += 10;
-  if (p.q2.includes('kidFriendly') && breed.goodKids) score += 10;
-  if (p.q2.includes('hypo') && breed.hypo) score += 12;
-  if (p.q2.includes('easyGroom')) {
-    const gMap = { "低": 8, "极低": 10, "中等": 2, "高": -5, "极高": -8 };
+  // Q3: 养犬经验
+  const exp = p.q3 || 'none';
+  const trainMap = { "极高": 5, "高": 4, "中等": 3, "低": 2, "极低": 1 };
+  const dogT = trainMap[breed.trainability] || 3;
+  if (exp === 'none') {
+    score += dogT >= 4 ? 15 : dogT === 3 ? 8 : -8;
+    // 新手不适合强犬种
+    if (breed.energy === '极高' && dogT <= 2) score -= 8;
+  } else if (exp === 'some') {
+    score += 5;
+  } else { // expert
+    score += dogT <= 2 ? 10 : 3; // 老手可以挑战难训犬种
+  }
+
+  // Q4: 偏好体型 (多选)
+  const sizePrefs = p.q4 || [];
+  if (sizePrefs.length > 0 && !sizePrefs.includes('any')) {
+    const sizeValMap = { tiny: 1, small: 2, medium: 3, large: 4, giant: 5 };
+    const matched = sizePrefs.some(s => sizeValMap[s] === dogSize);
+    score += matched ? 12 : -10;
+  }
+
+  // Q5: 特殊需求 (多选)
+  const prefs = p.q5 || [];
+  if (prefs.includes('kidFriendly') && breed.goodKids) score += 12;
+  if (prefs.includes('kidFriendly') && !breed.goodKids) score -= 6;
+  if (prefs.includes('hypo') && breed.hypo) score += 12;
+  if (prefs.includes('hypo') && !breed.hypo) score -= 4;
+  if (prefs.includes('easyGroom')) {
+    const gMap = { "低": 10, "极低": 12, "中等": 3, "高": -5, "极高": -8 };
     score += gMap[breed.grooming] || 0;
   }
-  if (p.q2.includes('trainable')) {
-    const tMap = { "极高": 10, "高": 8, "中等": 2, "低": -4, "极低": -6 };
-    score += tMap[breed.trainability] || 0;
+  if (prefs.includes('trainable')) {
+    score += dogT >= 4 ? 10 : dogT === 3 ? 5 : -5;
   }
-  if (p.q2.includes('energetic') && dogE >= 4) score += 8;
-  if (p.q2.includes('calm') && dogE <= 2) score += 8;
+  if (prefs.includes('quiet')) {
+    if (breed.energy === '极低' || breed.energy === '低') score += 10;
+    else if (breed.energy === '极高') score -= 6;
+  }
+  if (prefs.includes('watchdog')) {
+    if (dogSize >= 3 && breed.energy !== '极低') score += 8;
+  }
+  if (prefs.includes('otherPet')) {
+    if (breed.goodKids) score += 8; // goodKids可作为友好度代理
+  }
+  if (prefs.includes('senior')) {
+    score += (dogE <= 2 && breed.goodKids) ? 12 : dogE >= 4 ? -6 : 2;
+  }
 
   return Math.max(15, Math.min(99, Math.round(score)));
 }
@@ -10827,7 +11198,7 @@ function handleBrowseSearch(q) {
 function renderBrowseList() {
   let list = BREEDS;
   if (browseFilter !== 'all') list = list.filter(b => b.fciGroup === browseFilter);
-  if (browseQuery) list = list.filter(b => b.cn.includes(browseQuery) || b.en.toLowerCase().includes(browseQuery));
+  if (browseQuery) list = list.filter(b => matchAlias(browseQuery, b));
   list = list.slice(0, 50);
 
   document.getElementById('browseList').innerHTML = list.map(b => {
@@ -10863,127 +11234,137 @@ function openDetail(id) {
   const exerciseMap = { "极低": 10, "低": 25, "中等": 50, "高": 75, "极高": 100 };
   const groomMap = { "极低": 10, "低": 25, "中等": 50, "高": 75, "极高": 100 };
   const trainMap = { "极低": 10, "低": 25, "中等": 50, "高": 75, "极高": 100 };
-  const ePct = energyMap[b.energy] || 50;
-  const gPct = groomMap[b.grooming] || 50;
-  const tPct = trainMap[b.trainability] || 50;
 
-  let healthHtml = '';
-  if (b.health && b.health.length) {
-    healthHtml = `
-      <div class="detail-sheet-section">
-        <h4>⚠️ 遗传健康关注</h4>
-        <div class="health-tags">${b.health.map(h => `<span class="health-tag">${h.trim()}</span>`).join('')}</div>
-      </div>`;
-  }
+  // 优缺点推断
+  const pros = [];
+  const cons = [];
+  if (b.goodKids) pros.push('对小孩友好');
+  if (b.hypo) pros.push('低敏不掉毛');
+  if (b.trainability === '高' || b.trainability === '极高') pros.push('聪明易训练');
+  if (b.grooming === '低' || b.grooming === '极低') pros.push('好打理');
+  if (b.energy === '低' || b.energy === '极低') pros.push('安静省心');
+  if (b.apartment) pros.push('适合公寓');
 
-  // AI image gallery
-  let aiGalleryHtml = '';
-  if (b.aiImages) {
-    const views = [];
-    if (b.aiImages.front) views.push({ src: b.aiImages.front, label: '📸 正面照' });
-    if (b.aiImages.side) views.push({ src: b.aiImages.side, label: '📸 侧面照' });
-    if (b.aiImages.compare) views.push({ src: b.aiImages.compare, label: '📐 体型对比' });
-    if (views.length) {
-      aiGalleryHtml = `
-      <div class="detail-sheet-section">
-        <h4>🖼️ 品种图鉴</h4>
-        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;">
-          ${views.map(v => `
-            <div style="flex:0 0 auto;width:160px;cursor:pointer;" onclick="showFullImage('${v.src}','${b.cn}')">
-              <div style="width:160px;height:160px;border-radius:12px;overflow:hidden;background:#f5f5f5;">
-                <img src="${v.src}" alt="${v.label}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:#ccc;font-size:32px;\\'>🐕</div>'">
-              </div>
-              <div style="text-align:center;font-size:11px;color:var(--ink2);margin-top:4px;">${v.label}</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>`;
-    }
-  }
+  if (b.energy === '极高') cons.push('运动量极大');
+  if (b.grooming === '高' || b.grooming === '极高') cons.push('掉毛/护理多');
+  if (!b.apartment) cons.push('不适合小公寓');
+  if (!b.goodKids) cons.push('需注意与小孩相处');
+  if (b.trainability === '低' || b.trainability === '极低') cons.push('训练难度大');
+  if (b.size === '大型犬' || b.size === '超大型犬') cons.push('食量/花销大');
 
-  // Hero image: prefer AI front image for large display
-  const heroImg = (b.aiImages && b.aiImages.front)
-    ? `<img src="${b.aiImages.front}" alt="${b.cn}" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='${img.replace(/'/g, "\\'")}'">`
-    : img;
+  // 年花费估算
+  const costMap = { '超小型犬': '3,000-5,000', '小型犬': '4,000-8,000', '中型犬': '6,000-12,000', '大型犬': '8,000-18,000', '超大型犬': '12,000-25,000' };
+  const yearCost = costMap[b.size] || '5,000-10,000';
+
+  // 养犬难度评分
+  let difficulty = 1;
+  if (b.energy === '高' || b.energy === '极高') difficulty++;
+  if (b.grooming === '高' || b.grooming === '极高') difficulty++;
+  if (b.trainability === '低' || b.trainability === '极低') difficulty++;
+  if (!b.goodKids) difficulty += 0.5;
+  if (b.size === '大型犬' || b.size === '超大型犬') difficulty += 0.5;
+  const diffStars = '⭐'.repeat(Math.min(5, Math.max(1, Math.round(difficulty))));
+
+  // 适合谁
+  const suitable = [];
+  if (b.apartment && b.energy !== '极高') suitable.push('公寓住户');
+  if (b.goodKids) suitable.push('有小孩家庭');
+  if (b.trainability === '极高' || b.trainability === '高') suitable.push('初次养犬者');
+  if (b.energy === '极高') suitable.push('运动爱好者');
+  if (b.hypo) suitable.push('过敏体质');
+
+  const notSuitable = [];
+  if (!b.apartment && b.energy === '极高') notSuitable.push('小公寓住户');
+  if (!b.goodKids) notSuitable.push('有婴幼儿家庭');
+  if (b.energy === '极高' && b.trainability === '低') notSuitable.push('没时间运动的人');
+
+  // Health
+  const healthHtml = b.health && b.health.length ? `
+    <div class="detail-section">
+      <div class="detail-section-title">🏥 常见健康问题</div>
+      <div style="padding:8px 0;">${b.health.map(h => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#FFF3E0;border-radius:6px;font-size:12px;color:#E65100;">\${h}</span>\`).join('')}</div>
+    </div>` : '';
 
   document.getElementById('detailSheet').innerHTML = `
-    <div class="detail-sheet-hero">
-      ${heroImg}
-      <button class="detail-sheet-close" onclick="closeDetail()">✕</button>
+    <div class="detail-top">
+      <button class="detail-close" onclick="closeDetail()">✕</button>
     </div>
-    <div class="detail-sheet-body">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div>
-          <div class="detail-sheet-name">${b.cn}</div>
-          <div class="detail-sheet-en">${b.en}</div>
-        </div>
-        <button onclick="toggleFav(${b.id}, this)" style="border:none;background:none;font-size:28px;cursor:pointer;">
-          ${isFav ? '❤️' : '🤍'}
+    <div class="detail-img" onclick="showFullImage(${b.id})">\${img}</div>
+    <div class="detail-body">
+      <div class="detail-name">\${b.cn}</div>
+      <div class="detail-en">\${b.en}</div>
+      <div style="display:flex;gap:6px;margin:8px 0;flex-wrap:wrap;">
+        <span class="detail-tag">\${meta.icon || '🐕'} \${meta.name || ''}</span>
+        <span class="detail-tag">📏 \${b.size}</span>
+        <span class="detail-tag">🌍 \${b.country}</span>
+        <span class="detail-tag">⏳ \${b.lifespan}</span>
+      </div>
+
+      <div class="detail-actions">
+        <button class="detail-fav \${isFav ? 'faved' : ''}" onclick="toggleFav(\${b.id}, this)">
+          \${isFav ? '❤️ 已收藏' : '🤍 收藏'}
         </button>
       </div>
 
-      ${aiGalleryHtml}
+      <!-- 新增：优缺点 -->
+      <div class="detail-section">
+        <div class="detail-section-title">✅ 优点</div>
+        <div style="padding:4px 0;">\${pros.map(p => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#E8F5E9;border-radius:6px;font-size:12px;color:#2E7D32;">✓ \${p}</span>\`).join('')}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">⚠️ 注意</div>
+        <div style="padding:4px 0;">\${cons.map(c => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#FFF3E0;border-radius:6px;font-size:12px;color:#E65100;">⚠ \${c}</span>\`).join('')}</div>
+      </div>
 
-      <div class="detail-sheet-section">
-        <h4>基本信息</h4>
-        <div class="detail-stats-grid">
-          <div class="detail-stat-box"><div class="detail-stat-val">${b.size}</div><div class="detail-stat-label">体型</div></div>
-          <div class="detail-stat-box"><div class="detail-stat-val">${b.weight}</div><div class="detail-stat-label">体重</div></div>
-          <div class="detail-stat-box"><div class="detail-stat-val">${b.lifespan}</div><div class="detail-stat-label">寿命</div></div>
-          <div class="detail-stat-box"><div class="detail-stat-val">${b.height}</div><div class="detail-stat-label">肩高</div></div>
-          <div class="detail-stat-box"><div class="detail-stat-val">${b.country}</div><div class="detail-stat-label">原产地</div></div>
-          <div class="detail-stat-box"><div class="detail-stat-val">${meta.icon} ${meta.name}</div><div class="detail-stat-label">FCI组别</div></div>
-          ${b.fciSectionCN ? `<div class="detail-stat-box"><div class="detail-stat-val">${b.fciSectionCN}</div><div class="detail-stat-label">FCI子组</div></div>` : ''}
+      <!-- 新增：养犬难度+年度花费 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0;">
+        <div style="background:#F5F5F5;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:12px;color:var(--ink3);margin-bottom:4px;">养犬难度</div>
+          <div style="font-size:16px;">\${diffStars}</div>
+        </div>
+        <div style="background:#F5F5F5;border-radius:10px;padding:12px;text-align:center;">
+          <div style="font-size:12px;color:var(--ink3);margin-bottom:4px;">预估年花费</div>
+          <div style="font-size:14px;font-weight:600;color:#E65100;">¥\${yearCost}</div>
         </div>
       </div>
 
-      <div class="detail-sheet-section">
-        <h4>性格特征</h4>
-        <div class="detail-bar-row">
-          <span class="detail-bar-label">活力</span>
-          <div class="detail-bar-track"><div class="detail-bar-fill" style="width:${ePct}%;background:var(--coral);"></div></div>
-          <span class="detail-bar-val">${b.energy}</span>
-        </div>
-        <div class="detail-bar-row">
-          <span class="detail-bar-label">护理</span>
-          <div class="detail-bar-track"><div class="detail-bar-fill" style="width:${gPct}%;background:var(--teal);"></div></div>
-          <span class="detail-bar-val">${b.grooming}</span>
-        </div>
-        <div class="detail-bar-row">
-          <span class="detail-bar-label">训练</span>
-          <div class="detail-bar-track"><div class="detail-bar-fill" style="width:${tPct}%;background:var(--purple);"></div></div>
-          <span class="detail-bar-val">${b.trainability}</span>
+      <!-- 新增：适合谁 -->
+      \${suitable.length ? \`<div class="detail-section">
+        <div class="detail-section-title">💚 适合</div>
+        <div style="padding:4px 0;">\${suitable.map(s => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#E8F5E9;border-radius:6px;font-size:12px;color:#2E7D32;">\${s}</span>\`).join('')}</div>
+      </div>\` : ''}
+      \${notSuitable.length ? \`<div class="detail-section">
+        <div class="detail-section-title">💔 不太适合</div>
+        <div style="padding:4px 0;">\${notSuitable.map(s => \`<span style="display:inline-block;padding:4px 10px;margin:4px 4px 4px 0;background:#FCE4EC;border-radius:6px;font-size:12px;color:#C2185B;">\${s}</span>\`).join('')}</div>
+      </div>\` : ''}
+
+      <!-- 维度评分条 -->
+      <div class="detail-section">
+        <div class="detail-section-title">📊 维度评分</div>
+        <div class="detail-bars">
+          <div class="detail-bar-row"><span>活力</span><div class="detail-bar"><div class="detail-bar-fill" style="width:\${energyMap[b.energy] || 50}%"></div></div></div>
+          <div class="detail-bar-row"><span>运动</span><div class="detail-bar"><div class="detail-bar-fill" style="width:\${exerciseMap[b.exercise] || 50}%"></div></div></div>
+          <div class="detail-bar-row"><span>打理</span><div class="detail-bar"><div class="detail-bar-fill" style="width:\${groomMap[b.grooming] || 50}%"></div></div></div>
+          <div class="detail-bar-row"><span>训练</span><div class="detail-bar"><div class="detail-bar-fill" style="width:\${trainMap[b.trainability] || 50}%"></div></div></div>
         </div>
       </div>
 
-      <div class="detail-sheet-section">
-        <h4>性格描述</h4>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          ${b.personality ? b.personality.split(',').map(p => `<span class="trait-chip good">${p.trim()}</span>`).join('') : '<span class="trait-chip info">暂无</span>'}
+      <!-- 性格与用途 -->
+      <div class="detail-section">
+        <div class="detail-section-title">🎯 性格特点</div>
+        <div style="padding:4px 0;">
+          \${(b.personality || '').split(', ').map(t => \`<span class="trait-chip">\${t}</span>\`).join('')}
         </div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+          \${b.goodKids ? '<span class="trait-chip good">👶 亲子友好</span>' : ''}
+          \${b.hypo ? '<span class="trait-chip good">🌸 低敏不掉毛</span>' : ''}
+          \${b.apartment ? '<span class="trait-chip good">🏢 适合公寓</span>' : ''}
+          \${b.trainability === '高' || b.trainability === '极高' ? '<span class="trait-chip good">🎓 易训练</span>' : ''}
+        </div>
+        \${b.suitableFor ? \`<div style="margin-top:8px;font-size:12px;color:var(--ink2);">💡 \${b.suitableFor}</div>\` : ''}
       </div>
 
-      <div class="detail-sheet-section">
-        <h4>运动需求</h4>
-        <div class="detail-bar-row">
-          <span class="detail-bar-label">运动量</span>
-          <div class="detail-bar-track"><div class="detail-bar-fill" style="width:${exerciseMap[b.exercise]||50}%;background:var(--yellow);"></div></div>
-          <span class="detail-bar-val">${b.exercise}</span>
-        </div>
-      </div>
-
-      <div class="detail-sheet-section">
-        <h4>适合场景</h4>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          ${b.goodKids ? '<span class="trait-chip good">👶 适合儿童</span>' : ''}
-          ${b.apartment ? '<span class="trait-chip good">🏢 适合公寓</span>' : '<span class="trait-chip info">🏡 需要空间</span>'}
-          ${b.hypo ? '<span class="trait-chip good">🌸 低过敏</span>' : ''}
-          ${(b.trainability === '极高' || b.trainability === '高') ? '<span class="trait-chip good">🎓 易训练</span>' : ''}
-        </div>
-        ${b.suitableFor ? `<div style="margin-top:8px;font-size:12px;color:var(--ink2);">💡 ${b.suitableFor}</div>` : ''}
-      </div>
-
-      ${healthHtml}
+      \${healthHtml}
     </div>`;
 
   document.getElementById('detailOverlay').classList.add('show');
@@ -11089,26 +11470,89 @@ function getBreedEmoji(breed) {
 // ============================================================
 function shareResult() {
   if (!matchResults.length) return;
-  const top = matchResults[0];
-  const b = top.breed;
-  const img = getImageHtml(b, 72);
+  const top3 = matchResults.slice(0, 3);
 
+  // 创建离屏分享卡片
+  const cardDiv = document.createElement('div');
+  cardDiv.className = 'share-card-gen';
+  cardDiv.id = 'shareCardGen';
+
+  let breedsHtml = top3.map((r, i) => {
+    const b = r.breed;
+    const emojis = ['🥇', '🥈', '🥉'];
+    return `<div class="sc-breed-item">
+      <span>${emojis[i]}</span>
+      <div>
+        <div class="sc-breed-name">${b.cn}</div>
+        <div class="sc-breed-info">${b.size} · ${b.energy}活力</div>
+      </div>
+      <div class="sc-breed-score">${r.score}%</div>
+    </div>`;
+  }).join('');
+
+  cardDiv.innerHTML = `
+    <div class="sc-top">
+      <div class="sc-emoji">🐾</div>
+      <div class="sc-title">我的选狗结果</div>
+      <div class="sc-sub">379个权威品种智能匹配</div>
+    </div>
+    <div class="sc-breeds">${breedsHtml}</div>
+    <div class="sc-footer">
+      <div class="sc-footer-text">长按保存图片分享</div>
+      <div class="sc-footer-brand">🐾 汪星球</div>
+    </div>`;
+
+  document.body.appendChild(cardDiv);
+
+  // 用html2canvas生成图片
+  if (typeof html2canvas !== 'undefined') {
+    html2canvas(cardDiv, {
+      scale: 2,
+      backgroundColor: null,
+      useCORS: true
+    }).then(canvas => {
+      document.body.removeChild(cardDiv);
+
+      // 显示分享弹窗
+      document.getElementById('shareCard').innerHTML = `
+        <div style="text-align:center;padding:20px;">
+          <img src="${canvas.toDataURL('image/png')}" style="width:100%;border-radius:12px;margin-bottom:16px;">
+          <div style="font-size:14px;color:var(--ink3);margin-bottom:16px;">长按图片保存，分享给朋友</div>
+          <div style="display:flex;gap:10px;">
+            <button class="share-action-btn copy" onclick="copyShareText()">📋 复制文字</button>
+            <button class="share-action-btn close" onclick="closeShare()">关闭</button>
+          </div>
+        </div>`;
+
+      document.getElementById('shareOverlay').classList.add('show');
+    }).catch(() => {
+      document.body.removeChild(cardDiv);
+      // fallback到文字分享
+      showTextShare(top3);
+    });
+  } else {
+    document.body.removeChild(cardDiv);
+    showTextShare(top3);
+  }
+}
+
+function showTextShare(top3) {
+  const b = top3[0].breed;
   document.getElementById('shareCard').innerHTML = `
     <div class="share-card-hero">
-      ${img}
-      <div class="share-card-score">${top.score}%</div>
+      ${getImageHtml(b, 72)}
+      <div class="share-card-score">${top3[0].score}%</div>
     </div>
     <div class="share-card-body">
       <div class="share-card-title">${b.cn}</div>
       <div class="share-card-en">${b.en}</div>
-      <div class="share-card-reason">${genReason(b, top.score)}</div>
+      <div class="share-card-reason">${genReason(b, top3[0].score)}</div>
       <div class="share-card-footer">🐾 汪星球 · 379个权威犬种智能匹配</div>
     </div>
     <div class="share-actions">
       <button class="share-action-btn copy" onclick="copyShareText()">📋 复制文字</button>
       <button class="share-action-btn close" onclick="closeShare()">关闭</button>
     </div>`;
-
   document.getElementById('shareOverlay').classList.add('show');
 }
 

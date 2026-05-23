@@ -1117,6 +1117,102 @@ body {
 .detail-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; background: linear-gradient(90deg, #FF8A65 0%, #FF5722 100%); }
 .detail-bar-val { font-size: 12px; font-weight: 600; width: 36px; text-align: right; flex-shrink: 0; color: var(--ink1); }
 
+/* 品种详情页 - JS动态生成的class样式 */
+.detail-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 2;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+.detail-close {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.detail-img {
+  height: 220px;
+  background: linear-gradient(135deg, var(--yellow-light, #FFF8E1), var(--coral-light, #FFE0B2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+.detail-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.detail-body {
+  padding: 20px;
+}
+.detail-name {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--ink1);
+}
+.detail-en {
+  font-size: 13px;
+  color: var(--ink3);
+  margin-bottom: 12px;
+}
+.detail-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #F5F5F5;
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--ink2);
+  white-space: nowrap;
+}
+.detail-actions {
+  margin: 12px 0;
+}
+.detail-fav {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border, #E0E0E0);
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.detail-fav.faved {
+  background: #FFF0F0;
+  border-color: #FF6B6B;
+  color: #FF6B6B;
+}
+.detail-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #F0F0F0;
+}
+.detail-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink1);
+  margin-bottom: 10px;
+}
+.detail-bars {
+  padding: 4px 0;
+}
+
+
 <style>
 /* 分享图片卡片 */
 .share-card-gen {
@@ -1228,7 +1324,6 @@ body {
 .pk-card-side .pk-trait { font-size: 11px; color: var(--ink3); }
 .hero-stats { animation: fadeInUp 0.5s ease 0.3s both; }
 @keyframes fadeInUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-</style>
 </style>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
@@ -10782,15 +10877,15 @@ function renderPKScroll() {
     if (!b1 || !b2) return '';
     const e1 = getBreedEmoji(b1);
     const e2 = getBreedEmoji(b2);
-    return `<div class="pk-card" onclick="openDetail(${id1})">
+    return `<div class="pk-card">
       <div class="pk-card-body">
-        <div class="pk-card-side">
+        <div class="pk-card-side" onclick="openDetail(${id1})" style="cursor:pointer;">
           <div class="pk-emoji">${e1}</div>
           <div class="pk-name">${b1.cn}</div>
           <div class="pk-trait">${b1.size}</div>
         </div>
         <div class="pk-card-vs">VS</div>
-        <div class="pk-card-side">
+        <div class="pk-card-side" onclick="openDetail(${id2})" style="cursor:pointer;">
           <div class="pk-emoji">${e2}</div>
           <div class="pk-name">${b2.cn}</div>
           <div class="pk-trait">${b2.size}</div>

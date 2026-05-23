@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>汪星球 · 选狗神器 <span style="font-size:0.4em;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:2px 8px;border-radius:10px;vertical-align:middle;margin-left:6px;font-weight:500;">v6 内测</span> - 379个权威犬种智能匹配 v5</title>
+<title>汪星球 · 选狗神器 v7 - 379个权威犬种智能匹配</title>
 <!-- Google Fonts removed for China access, using system fonts -->
 <style>
 body { padding-top: 24px !important; }
@@ -649,17 +649,25 @@ body {
   margin: 12px 0;
 }
 .trait-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 5px 10px;
   border-radius: 12px;
   font-size: 11px;
   font-weight: 600;
+  background: #F5F5F5;
+  color: var(--ink2);
 }
 .trait-chip.good { background: var(--teal-light); color: #0D9B93; }
 .trait-chip.warn { background: var(--yellow-light); color: #B8860B; }
 .trait-chip.info { background: var(--purple-light); color: #6D28D9; }
+.detail-traits-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 0;
+}
 
 /* One-line reason */
 .breed-reason {
@@ -1102,12 +1110,12 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
-.detail-bar-label { font-size: 12px; color: var(--ink2); width: 50px; flex-shrink: 0; }
-.detail-bar-track { flex: 1; height: 8px; background: #F0EDE8; border-radius: 4px; overflow: hidden; }
-.detail-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-.detail-bar-val { font-size: 11px; font-weight: 600; width: 30px; text-align: right; flex-shrink: 0; }
+.detail-bar-label { font-size: 13px; color: var(--ink2); width: 40px; flex-shrink: 0; font-weight: 500; }
+.detail-bar-track { flex: 1; height: 10px; background: #F0EDE8; border-radius: 5px; overflow: hidden; }
+.detail-bar-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; background: linear-gradient(90deg, #FF8A65 0%, #FF5722 100%); }
+.detail-bar-val { font-size: 12px; font-weight: 600; width: 36px; text-align: right; flex-shrink: 0; color: var(--ink1); }
 
 <style>
 /* 分享图片卡片 */
@@ -1226,7 +1234,7 @@ body {
 </head>
 <body>
 <div style="position:fixed;top:0;left:0;right:0;background:linear-gradient(90deg,#667eea,#764ba2);color:#fff;text-align:center;font-size:11px;padding:3px 0;z-index:99999;letter-spacing:1px;">
-  🔒 内测版 v6 · 仅供内部评估使用
+  🔒 内测版 v7 · 仅供内部评估使用
 </div>
 
 
@@ -11355,16 +11363,16 @@ function openDetail(id) {
       '<div class="detail-section">' +
         '<div class="detail-section-title">📊 维度评分</div>' +
         '<div class="detail-bars">' +
-          '<div class="detail-bar-row"><span>活力</span><div class="detail-bar"><div class="detail-bar-fill" style="width:' + (eMap[b.energy]||50) + '%"></div></div></div>' +
-          '<div class="detail-bar-row"><span>运动</span><div class="detail-bar"><div class="detail-bar-fill" style="width:' + (eMap[b.exercise]||50) + '%"></div></div></div>' +
-          '<div class="detail-bar-row"><span>打理</span><div class="detail-bar"><div class="detail-bar-fill" style="width:' + (eMap[b.grooming]||50) + '%"></div></div></div>' +
-          '<div class="detail-bar-row"><span>训练</span><div class="detail-bar"><div class="detail-bar-fill" style="width:' + (eMap[b.trainability]||50) + '%"></div></div></div>' +
+          '<div class="detail-bar-row"><span class="detail-bar-label">活力</span><div class="detail-bar-track"><div class="detail-bar-fill" style="width:' + (eMap[b.energy]||50) + '%"></div></div><span class="detail-bar-val">' + (eMap[b.energy]||50) + '</span></div>' +
+          '<div class="detail-bar-row"><span class="detail-bar-label">运动</span><div class="detail-bar-track"><div class="detail-bar-fill" style="width:' + (eMap[b.exercise]||50) + '%"></div></div><span class="detail-bar-val">' + (eMap[b.exercise]||50) + '</span></div>' +
+          '<div class="detail-bar-row"><span class="detail-bar-label">打理</span><div class="detail-bar-track"><div class="detail-bar-fill" style="width:' + (eMap[b.grooming]||50) + '%"></div></div><span class="detail-bar-val">' + (eMap[b.grooming]||50) + '</span></div>' +
+          '<div class="detail-bar-row"><span class="detail-bar-label">训练</span><div class="detail-bar-track"><div class="detail-bar-fill" style="width:' + (eMap[b.trainability]||50) + '%"></div></div><span class="detail-bar-val">' + (eMap[b.trainability]||50) + '</span></div>' +
         '</div>' +
       '</div>' +
       '<div class="detail-section">' +
         '<div class="detail-section-title">🎯 性格特点</div>' +
-        '<div style="padding:4px 0;">' + traitsHtml + '</div>' +
-        '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">' + traitBadges + '</div>' +
+        '<div class="detail-traits-list">' + traitsHtml + '</div>' +
+        '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">' + traitBadges + '</div>' +
         suitableForHtml +
       '</div>' +
       healthHtml +
@@ -11627,7 +11635,7 @@ document.getElementById('shareOverlay').addEventListener('click', function(e) {
 </script>
 
 <div style="text-align:center;padding:12px;color:#999;font-size:11px;border-top:1px solid #eee;margin-top:20px;">
-  选狗神器 v6 · 内测版 · 379品种 · 50品种AI画像(3视角×150张) · 数据来源: FCI/AKC<br>
+  选狗神器 v7 · 内测版 · 379品种 · 50品种AI画像(3视角×150张) · 数据来源: FCI/AKC<br>
   内测专属 · 仅供评估 · 图片由AI生成仅供参考
 </div>
 </body>
